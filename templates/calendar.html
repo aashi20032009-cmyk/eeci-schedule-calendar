@@ -328,6 +328,9 @@
         <input
             id="eventEnd"
             type="time">
+        <input
+            id="eventLocation"
+            placeholder="Room / Location">
 
         <select id="eventType">
 
@@ -488,6 +491,9 @@ else {
             const type =
                 document.getElementById("eventType").value;
 
+            const location =
+                document.getElementById("eventLocation").value;
+
             let color;
 
 if (type === "Extra Class") {
@@ -512,11 +518,12 @@ const event = {
 
     borderColor: color,
 
-    room: type,
+    type: type,
+
+    room: location,
 
     timing: `${start} - ${end}`
 };
-
             customEvents.push(event);
 
             localStorage.setItem(
