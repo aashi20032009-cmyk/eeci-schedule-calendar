@@ -9,28 +9,103 @@
 <title>EECI Schedule</title>
 
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js"></script>
+<script>
+    const savedTheme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = savedTheme;
+</script>
 
 <style>
 
     :root {
-        --vanilla: #f9f5f2;
-        --blush: #35333a;
-        --rosewood: #bdaba4;
-        --sage: #35333a;
-        --misty: #c57f90;
-        --midnight: #a35555;
+        --page-bg: #f9f5f2;
+        --surface: rgba(255, 255, 255, 0.78);
+        --surface-strong: #ffffff;
+        --surface-muted: rgba(255, 255, 255, 0.35);
+        --calendar-header-bg: rgba(255, 255, 255, 0.72);
+        --calendar-header-text: #8b7772;
+        --calendar-list-bg: rgba(255, 255, 255, 0.82);
+        --calendar-list-text: #35333a;
+        --text: #35333a;
+        --text-muted: #8b7772;
+        --accent: #a35555;
+        --accent-hover: #bdaba4;
+        --event-bg: #c57f90;
+        --event-text: #ffffff;
+        --border: rgba(0, 0, 0, 0.08);
+        --shadow: rgba(0, 0, 0, 0.08);
+        --modal-backdrop: rgba(0, 0, 0, 0.35);
+        --input-bg: #ffffff;
+        --input-border: #ddd7d3;
+        --danger: #d9534f;
+        --notes-bg: rgba(163, 85, 85, 0.08);
+        --today-bg: rgba(197, 127, 144, 0.12);
+        --button-text: #ffffff;
+    }
+
+    :root[data-theme="dark"] {
+        --page-bg: #151418;
+        --surface: rgba(35, 34, 40, 0.88);
+        --surface-strong: #242229;
+        --surface-muted: rgba(255, 255, 255, 0.07);
+        --calendar-header-bg: #302b31;
+        --calendar-header-text: #e7d9d7;
+        --calendar-list-bg: #262229;
+        --calendar-list-text: #f1e7e5;
+        --text: #f4eeee;
+        --text-muted: #c7b9b5;
+        --accent: #a76574;
+        --accent-hover: #895565;
+        --event-bg: #8e4f61;
+        --event-text: #fff7f8;
+        --border: rgba(255, 255, 255, 0.12);
+        --shadow: rgba(0, 0, 0, 0.35);
+        --modal-backdrop: rgba(0, 0, 0, 0.62);
+        --input-bg: #17161b;
+        --input-border: #4b4248;
+        --danger: #e15f5b;
+        --notes-bg: rgba(167, 101, 116, 0.16);
+        --today-bg: rgba(167, 101, 116, 0.14);
+        --button-text: #fff7f8;
     }
 
     * {
         box-sizing: border-box;
     }
 
+    html {
+        color-scheme: light;
+    }
+
+    html[data-theme="dark"] {
+        color-scheme: dark;
+    }
+
+    html,
+    body,
+    #calendar,
+    .modal-content,
+    .fc-theme-standard td,
+    .fc-theme-standard th,
+    .fc-theme-standard .fc-scrollgrid,
+    .fc .fc-button,
+    .fc-event,
+    input,
+    select,
+    textarea,
+    button {
+        transition:
+            background-color 0.25s ease,
+            border-color 0.25s ease,
+            box-shadow 0.25s ease,
+            color 0.25s ease;
+    }
+
     body {
         margin: 0;
         padding: 30px;
-        background: var(--vanilla);
+        background: var(--page-bg);
         font-family: "Segoe UI", sans-serif;
-        color: var(--sage);
+        color: var(--text);
     }
 
     .container {
@@ -39,51 +114,88 @@
     }
 
     .header {
-        text-align: center;
         margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .header-text {
+        flex: 1;
+        text-align: center;
     }
 
     .header h1 {
         margin: 0;
         font-size: 2.3rem;
         font-weight: 700;
-        color: var(--sage);
+        color: var(--text);
     }
 
     .subtitle {
         margin-top: 8px;
-        color: var(--rosewood);
+        color: var(--text-muted);
         font-size: 1rem;
     }
 
+    .schedule-alert {
+        margin: 0 0 18px;
+        padding: 12px 14px;
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--accent);
+        border-radius: 8px;
+        background: var(--surface-strong);
+        color: var(--text);
+        box-shadow: 0 6px 18px var(--shadow);
+    }
+
+    #themeToggle {
+        min-width: 132px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 10px 14px;
+        background: var(--surface-strong);
+        color: var(--text);
+        cursor: pointer;
+        font-weight: 700;
+        box-shadow: 0 6px 18px var(--shadow);
+    }
+
+    #themeToggle:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+
     #calendar {
-        background: rgba(255, 255, 255, 0.75);
+        background: var(--surface);
         backdrop-filter: blur(10px);
         border-radius: 24px;
         padding: 20px;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 8px 30px var(--shadow);
     }
 
     /* Calendar toolbar */
 
     .fc-toolbar-title {
-        color: var(--sage);
+        color: var(--text);
         font-weight: 700;
     }
 
     .fc .fc-button {
-        background: var(--midnight) !important;
+        background: var(--accent) !important;
         border: none !important;
         border-radius: 12px !important;
+        color: var(--button-text) !important;
         padding: 8px 14px !important;
     }
 
     .fc .fc-button:hover {
-        background: var(--rosewood) !important;
+        background: var(--accent-hover) !important;
     }
 
     .fc .fc-button-primary:not(:disabled).fc-button-active {
-        background: var(--rosewood) !important;
+        background: var(--accent-hover) !important;
     }
 
     /* Grid */
@@ -91,28 +203,68 @@
     .fc-theme-standard td,
     .fc-theme-standard th,
     .fc-theme-standard .fc-scrollgrid {
-        border-color: rgba(0, 0, 0, 0.08);
+        border-color: var(--border);
     }
 
     .fc-col-header-cell {
-        background: rgba(255, 255, 255, 0.3);
+        background: var(--calendar-header-bg);
+    }
+
+    .fc .fc-daygrid-day {
+        background: transparent;
+        color: var(--text);
+    }
+
+    .fc .fc-list {
+        background: var(--calendar-list-bg);
+        color: var(--calendar-list-text);
+    }
+
+    .fc .fc-list-day-cushion {
+        background: var(--calendar-header-bg);
+        color: var(--calendar-header-text);
+    }
+
+    .fc .fc-list-event td {
+        background: var(--event-bg);
+        color: var(--event-text);
+    }
+
+    .fc .fc-daygrid-day-number,
+    .fc .fc-col-header-cell-cushion {
+        color: var(--calendar-header-text);
+    }
+
+    .fc .fc-list-day-cushion,
+    .fc .fc-list-day-text,
+    .fc .fc-list-day-side-text {
+        color: var(--calendar-header-text);
+    }
+
+    .fc .fc-list-event:hover td {
+        background: var(--accent-hover);
     }
 
     /* Events */
 
     .fc-event {
-        background: var(--misty) !important;
+        background: var(--event-bg) !important;
         border: none !important;
         border-radius: 8px !important;
-        color: white !important;
+        color: var(--event-text) !important;
         font-weight: 600;
         padding: 2px;
+    }
+
+    .fc-event-title,
+    .fc-event-time {
+        color: var(--event-text);
     }
 
     /* Today */
 
     .fc-day-today {
-        background: rgba(197, 127, 144, 0.12) !important;
+        background: var(--today-bg) !important;
     }
 
     /* Footer */
@@ -120,7 +272,7 @@
     .footer {
         margin-top: 20px;
         text-align: center;
-        color: var(--rosewood);
+        color: var(--text-muted);
         font-size: 0.9rem;
     }
 
@@ -137,14 +289,15 @@
         width: 100%;
         height: 100%;
 
-        background: rgba(0, 0, 0, 0.35);
+        background: var(--modal-backdrop);
 
         justify-content: center;
         align-items: center;
     }
 
     .modal-content {
-        background: white;
+        background: var(--surface-strong);
+        color: var(--text);
 
         width: 90%;
         max-width: 420px;
@@ -153,17 +306,18 @@
 
         border-radius: 20px;
 
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 10px 40px var(--shadow);
 
         position: relative;
     }
 
     .modal-content h2 {
         margin-top: 0;
-        color: var(--midnight);
+        color: var(--accent);
     }
 
-    #closeModal {
+    #closeModal,
+    #closeAddModal {
         position: absolute;
 
         top: 15px;
@@ -172,14 +326,25 @@
         font-size: 1.6rem;
         cursor: pointer;
 
-        color: var(--midnight);
+        color: var(--accent);
     }
 
     #modalType,
     #modalRoom,
-    #modalTime {
+    #modalTime,
+    #modalNotes {
         font-size: 1rem;
         line-height: 1.6;
+    }
+
+    #modalNotes {
+        background: var(--notes-bg);
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+    #modalNotes:empty {
+        display: none;
     }
 
     @media (max-width: 768px) {
@@ -192,6 +357,19 @@
             font-size: 1.8rem;
         }
 
+        .header {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .header-text {
+            text-align: center;
+        }
+
+        #themeToggle {
+            align-self: center;
+        }
+
         #calendar {
             padding: 10px;
         }
@@ -199,8 +377,8 @@
 
     #addEventBtn {
         margin-top: 15px;
-        background: var(--midnight);
-        color: white;
+        background: var(--accent);
+        color: var(--button-text);
         border: none;
         padding: 10px 18px;
         border-radius: 12px;
@@ -213,7 +391,8 @@
     }
 
     .modal-content input,
-    .modal-content select {
+    .modal-content select,
+    .modal-content textarea {
 
         width: 100%;
 
@@ -221,11 +400,28 @@
 
         margin-top: 10px;
 
-        border: 1px solid #ddd;
+        background: var(--input-bg);
+
+        color: var(--text);
+
+        border: 1px solid var(--input-border);
 
         border-radius: 10px;
 
         font-size: 0.95rem;
+    }
+
+    .modal-content textarea {
+        resize: vertical;
+        min-height: 96px;
+        font-family: inherit;
+    }
+
+    .modal-content label {
+        display: block;
+        margin-top: 12px;
+        color: var(--text-muted);
+        font-weight: 600;
     }
 
     #saveEvent {
@@ -236,9 +432,9 @@
 
         margin-top: 15px;
 
-        background: var(--midnight);
+        background: var(--accent);
 
-        color: white;
+        color: var(--button-text);
 
         border: none;
 
@@ -266,9 +462,9 @@
 
         min-width: 180px;
 
-        background: var(--midnight);
+        background: var(--accent);
 
-        color: white;
+        color: var(--button-text);
 
         border: none;
 
@@ -297,11 +493,20 @@
 
         cursor: pointer;
 
-        background: #d9534f;
+        background: var(--danger);
 
-        color: white;
+        color: #ffffff;
 
         font-weight: 600;
+    }
+
+    .schedule-alert,
+    .footer {
+        transition:
+            background-color 0.25s ease,
+            border-color 0.25s ease,
+            box-shadow 0.25s ease,
+            color 0.25s ease;
     }
 
 </style>
@@ -394,12 +599,27 @@
 <div class="container">
 
     <div class="header">
-        <h1>EECI Schedule</h1>
-        <p class="subtitle">
-            Class schedule calendar
-        </p>
+        <div class="header-text">
+            <h1>EECI Schedule</h1>
+            <p class="subtitle">
+                Class schedule calendar
+            </p>
+        </div>
+
+        <button
+            id="themeToggle"
+            type="button"
+            aria-label="Switch to dark mode">
+                Dark Mode
+        </button>
         
     </div>
+
+    {% if schedule_error %}
+    <div class="schedule-alert">
+        {{ schedule_error }}
+    </div>
+    {% endif %}
 
     <div id="calendar"></div>
 
@@ -424,6 +644,47 @@
     document.addEventListener('DOMContentLoaded', function () {
 
         const calendarEl = document.getElementById('calendar');
+        const themeToggle =
+            document.getElementById("themeToggle");
+
+        function updateThemeButton(theme) {
+
+            const isDark = theme === "dark";
+
+            themeToggle.innerText =
+                isDark ? "Light Mode" : "Dark Mode";
+
+            themeToggle.setAttribute(
+                "aria-label",
+                isDark
+                    ? "Switch to light mode"
+                    : "Switch to dark mode"
+            );
+        }
+
+        updateThemeButton(
+            document.documentElement.dataset.theme
+        );
+
+        themeToggle.onclick = function() {
+
+            const currentTheme =
+                document.documentElement.dataset.theme;
+
+            const nextTheme =
+                currentTheme === "dark" ? "light" : "dark";
+
+            document.documentElement.dataset.theme =
+                nextTheme;
+
+            localStorage.setItem(
+                "theme",
+                nextTheme
+            );
+
+            updateThemeButton(nextTheme);
+        };
+
         const eeciEvents =
         {{ events|tojson|safe }};
 

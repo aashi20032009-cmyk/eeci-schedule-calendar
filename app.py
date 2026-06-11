@@ -48,11 +48,21 @@ def get_schedule_events():
 @app.route("/")
 def home():
 
-    events = get_schedule_events()
+    schedule_error = None
+
+    try:
+        events = get_schedule_events()
+    except Exception:
+        events = []
+        schedule_error = (
+            "Live EECI schedule could not be loaded. "
+            "Your saved custom events are still available."
+        )
 
     return render_template(
         "calendar.html",
-        events=events
+        events=events,
+        schedule_error=schedule_error
     )
 
 

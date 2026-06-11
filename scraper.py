@@ -14,7 +14,10 @@ def get_table_rows():
         )
     }
 
-    response = requests.get(
+    session = requests.Session()
+    session.trust_env = False
+
+    response = session.get(
         url,
         headers=headers,
         timeout=10
