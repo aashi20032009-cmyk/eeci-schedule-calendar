@@ -588,6 +588,13 @@ const event = {
 
             calendar.addEvent(event);
 
+            document.getElementById("eventTitle").value = "";
+            document.getElementById("eventDate").value = "";
+            document.getElementById("eventStart").value = "";
+            document.getElementById("eventEnd").value = "";
+            document.getElementById("eventLocation").value = "";
+            document.getElementById("eventType").selectedIndex = 0;
+
             document.getElementById("addModal")
     .style.display = "none";
 
