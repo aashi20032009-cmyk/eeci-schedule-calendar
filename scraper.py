@@ -14,7 +14,13 @@ def get_table_rows():
         )
     }
 
-    response = requests.get(url, headers=headers)
+    response = requests.get(
+        url,
+        headers=headers,
+        timeout=10
+    )
+
+    response.raise_for_status()
 
     soup = BeautifulSoup(
         response.text,
@@ -25,6 +31,11 @@ def get_table_rows():
         "table",
         id="tablepress-19"
     )
+
+    if table is None:
+        raise Exception(
+            "Could not find schedule table"
+        )
 
     rows = table.find_all("tr")
 
