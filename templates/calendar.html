@@ -175,6 +175,7 @@
         color: var(--midnight);
     }
 
+    #modalType,
     #modalRoom,
     #modalTime {
         font-size: 1rem;
@@ -254,33 +255,55 @@
 
     .calendar-actions {
 
-    margin-top: 20px;
+        margin-top: 20px;
 
-    display: flex;
+        display: flex;
 
-    justify-content: center;
-}
+        justify-content: center;
+    }
 
-#addEventBtn {
+    #addEventBtn {
 
-    min-width: 180px;
+        min-width: 180px;
 
-    background: var(--midnight);
+        background: var(--midnight);
 
-    color: white;
+        color: white;
 
-    border: none;
+        border: none;
 
-    padding: 12px 20px;
+        padding: 12px 20px;
 
-    border-radius: 12px;
+        border-radius: 12px;
 
-    cursor: pointer;
+        cursor: pointer;
 
-    font-weight: 600;
+        font-weight: 600;
 
-    font-size: 1rem;
-}
+        font-size: 1rem;
+    }
+
+    #deleteEventBtn {
+
+        width: 100%;
+
+        margin-top: 15px;
+
+        padding: 12px;
+
+        border: none;
+
+        border-radius: 10px;
+
+        cursor: pointer;
+
+        background: #d9534f;
+
+        color: white;
+
+        font-weight: 600;
+    }
+
 </style>
 
 
@@ -297,9 +320,16 @@
 
         <h2 id="modalTitle"></h2>
 
+        <p id="modalType"></p>
+
         <p id="modalRoom"></p>
 
         <p id="modalTime"></p>
+
+        <button id="deleteEventBtn"
+            style="display:none;">
+                Delete Event
+        </button>
 
     </div>
 
@@ -380,6 +410,8 @@
 
 <script>
 
+    let selectedEvent = null;
+
     document.addEventListener('DOMContentLoaded', function () {
 
         const calendarEl = document.getElementById('calendar');
@@ -421,32 +453,53 @@
 
             eventClick: function(info) {
 
+                selectedEvent = info.event;
+
+                if (info.event.extendedProps.isCustom) {
+
+                    document.getElementById("deleteEventBtn")
+                        .style.display = "block";
+
+                }
+                else {
+
+                    document.getElementById("deleteEventBtn")
+                        .style.display = "none";
+                }
+
                 document.getElementById("modalTitle").innerText =
                     info.event.title;
 
+                const type =
+                    info.event.extendedProps.type;
+
                 const room =
-    info.event.extendedProps.room;
+                    info.event.extendedProps.room;
 
-const type =
-    info.event.extendedProps.type;
+                if (type) {
 
-if (room) {
+                    document.getElementById("modalType")
+                        .innerText = "🏷 Type: " + type;
 
-    document.getElementById("modalRoom")
-        .innerText = "📍 Room: " + room;
+                }
+                else {
 
-}
-else if (type) {
+                    document.getElementById("modalType")
+                        .innerText = "";
+                }
 
-    document.getElementById("modalRoom")
-        .innerText = "📌 Type: " + type;
+                if (room) {
 
-}
-else {
+                    document.getElementById("modalRoom")
+                        .innerText = "📍 Location: " + room;
 
-    document.getElementById("modalRoom")
-        .innerText = "";
-}
+                }
+                else {
+
+                    document.getElementById("modalRoom")
+                        .innerText = "";
+                }
+
 
                 document.getElementById("modalTime").innerText =
                     "🕒 Time: " + info.event.extendedProps.timing;
@@ -522,7 +575,9 @@ const event = {
 
     room: location,
 
-    timing: `${start} - ${end}`
+    timing: `${start} - ${end}`,
+
+    isCustom: true
 };
             customEvents.push(event);
 
@@ -542,6 +597,38 @@ const event = {
 
             document.getElementById("eventModal").style.display =
                 "none";
+        };
+
+        document.getElementById("deleteEventBtn")
+        .onclick = function() {
+
+            if (!selectedEvent) return;
+
+            const confirmDelete = confirm(
+                "Delete this event?"
+            );
+
+            if (!confirmDelete) return;
+
+            const updatedEvents =
+                customEvents.filter(event => {
+
+                    return !(
+                        event.title === selectedEvent.title &&
+                        event.start === selectedEvent.startStr
+                    );
+
+                });
+
+            localStorage.setItem(
+                "customEvents",
+                JSON.stringify(updatedEvents)
+            );
+
+            selectedEvent.remove();
+
+            document.getElementById("eventModal")
+                .style.display = "none";
         };
 
         window.onclick = function(event) {
