@@ -600,18 +600,30 @@ const event = {
         };
 
         document.getElementById("deleteEventBtn")
-        .onclick = function() {
+.onclick = function() {
 
-            console.log("Selected:");
+    if (!selectedEvent) return;
 
-            console.log(selectedEvent.title);
-            console.log(selectedEvent.startStr);
+    const updatedEvents =
+        customEvents.filter(event => {
 
-            console.log("Stored:");
+            return !(
+                event.title === selectedEvent.title &&
+                selectedEvent.startStr.startsWith(event.start)
+            );
 
-            console.log(customEvents);
+        });
 
-        };
+    localStorage.setItem(
+        "customEvents",
+        JSON.stringify(updatedEvents)
+    );
+
+    selectedEvent.remove();
+
+    document.getElementById("eventModal")
+        .style.display = "none";
+};
 
         window.onclick = function(event) {
 
