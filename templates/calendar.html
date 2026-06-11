@@ -252,6 +252,35 @@
         opacity: 0.9;
     }
 
+    .calendar-actions {
+
+    margin-top: 20px;
+
+    display: flex;
+
+    justify-content: center;
+}
+
+#addEventBtn {
+
+    min-width: 180px;
+
+    background: var(--midnight);
+
+    color: white;
+
+    border: none;
+
+    padding: 12px 20px;
+
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    font-weight: 600;
+
+    font-size: 1rem;
+}
 </style>
 
 
@@ -327,12 +356,18 @@
         <p class="subtitle">
             Class schedule calendar
         </p>
-        <button id="addEventBtn">
-            + Add Event
-        </button>
+        
     </div>
 
     <div id="calendar"></div>
+
+<div class="calendar-actions">
+
+    <button id="addEventBtn">
+        + Add Event
+    </button>
+
+</div>
 
     <div class="footer">
         Student-made calendar view of the EECI schedule
@@ -359,7 +394,8 @@
         ];
 
         const calendar = new FullCalendar.Calendar(calendarEl, {
-
+            displayEventTime: false,
+            
             initialView: 'dayGridMonth',
 
             firstDay: 1,
@@ -385,8 +421,29 @@
                 document.getElementById("modalTitle").innerText =
                     info.event.title;
 
-                document.getElementById("modalRoom").innerText =
-                    "📍 Room: " + info.event.extendedProps.room;
+                const room =
+    info.event.extendedProps.room;
+
+const type =
+    info.event.extendedProps.type;
+
+if (room) {
+
+    document.getElementById("modalRoom")
+        .innerText = "📍 Room: " + room;
+
+}
+else if (type) {
+
+    document.getElementById("modalRoom")
+        .innerText = "📌 Type: " + type;
+
+}
+else {
+
+    document.getElementById("modalRoom")
+        .innerText = "";
+}
 
                 document.getElementById("modalTime").innerText =
                     "🕒 Time: " + info.event.extendedProps.timing;
@@ -431,11 +488,47 @@
             const type =
                 document.getElementById("eventType").value;
 
-            console.log(title);
-            console.log(date);
-            console.log(start);
-            console.log(end);
-            console.log(type);
+            let color;
+
+if (type === "Extra Class") {
+    color = "#c57f90";
+}
+else if (type === "Personal Task") {
+    color = "#6f9ceb";
+}
+else {
+    color = "#9b7ad6";
+}
+
+const event = {
+
+    title: title,
+
+    start: `${date}T${start}`,
+
+    end: `${date}T${end}`,
+
+    backgroundColor: color,
+
+    borderColor: color,
+
+    room: type,
+
+    timing: `${start} - ${end}`
+};
+
+            customEvents.push(event);
+
+            localStorage.setItem(
+                "customEvents",
+                JSON.stringify(customEvents)
+            );
+
+            calendar.addEvent(event);
+
+            document.getElementById("addModal")
+    .style.display = "none";
+
         };
 
         document.getElementById("closeModal").onclick = function() {
