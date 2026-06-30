@@ -688,6 +688,21 @@
         const eeciEvents =
         {{ events|tojson|safe }};
 
+        const hardcodedClasses = [
+    {
+        title: "Electrical Circuits",
+        start: "2026-07-05T09:00",
+        end: "2026-07-05T18:00",
+        backgroundColor: "#c57f90",
+        borderColor: "#c57f90",
+        type: "Class",
+        room: "EECI",
+        timing: "09:00 - 18:00",
+        notes: " "
+    }
+ 
+];
+
         const customEvents =
         JSON.parse(
             localStorage.getItem("customEvents")
@@ -695,6 +710,7 @@
 
         const allEvents = [
             ...eeciEvents,
+            ...hardcodedClasses,
             ...customEvents
         ];
 
